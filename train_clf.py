@@ -4,6 +4,7 @@ from omegaconf import DictConfig, OmegaConf
 import hydra
 from hydra.utils import instantiate 
 import os 
+from neuronx_distributed.lightning import NeuronXLAStrategy, NeuronXLAPrecisionPlugin, NeuronTQDMProgressBar, NeuronTensorBoardLogger
 
 pl.seed_everything(12345)
 
@@ -23,8 +24,9 @@ def main(conf: DictConfig):
     test_loader = DataLoader(test_ds, batch_size = conf.dataloader.test_batch_size, shuffle = False, pin_memory = True, num_workers = 8)
     
     model = instantiate(conf.pl_model, _recursive_=False)    
-
-    tb_logger = pl.loggers.TensorBoardLogger(conf.trainer.log_dir)
+    callbacks = []
+    callbacks.append(NeuronTQDMProgressBar())
+    tb_logger = NeuronTensorBoardLogger(save_dir=conf.trainer.log_dir)
     trainer = pl.Trainer(
             accelerator = 'gpu',
             devices = [conf.trainer.gpu],

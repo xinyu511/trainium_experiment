@@ -1,0 +1,37 @@
+num_classes: 10
+train_split: 0.85
+val_split: 0.15
+train_dataset:
+  _target_: torchvision.datasets.SVHN
+  root: ./data
+  split: train
+  download: true
+  transform: 
+    _target_: torchvision.transforms.Compose
+    transforms:
+      - _target_: torchvision.transforms.RandomCrop
+        size: 32
+        padding: 4
+        padding_mode: reflect
+
+      - _target_: torchvision.transforms.ToTensor
+
+      # - _target_: torchvision.transforms.Normalize
+      #   mean: [0.4377, 0.4438, 0.4728]
+      #   std: [0.1980, 0.2010, 0.1970]
+      #   inplace: true
+
+test_dataset:
+  _target_: torchvision.datasets.SVHN
+  root: ./data
+  split: test
+  download: true
+  transform: 
+    _target_: torchvision.transforms.Compose
+    transforms:
+      - _target_: torchvision.transforms.ToTensor
+
+      # - _target_: torchvision.transforms.Normalize
+      #   mean: [0.4377, 0.4438, 0.4728]
+      #   std: [0.1980, 0.2010, 0.1970]
+      #   inplace: true

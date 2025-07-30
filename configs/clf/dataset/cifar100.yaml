@@ -1,0 +1,40 @@
+num_classes: 100
+train_split: 0.85
+val_split: 0.15
+train_dataset:
+  _target_: torchvision.datasets.CIFAR100
+  root: ./data
+  train: true
+  download: true
+  transform: 
+    _target_: torchvision.transforms.Compose
+    transforms:
+      - _target_: torchvision.transforms.RandomCrop
+        size: 32
+        padding: 4
+        padding_mode: reflect
+
+      - _target_: torchvision.transforms.RandomHorizontalFlip
+
+      - _target_: torchvision.transforms.ToTensor
+
+      # - _target_: torchvision.transforms.Normalize
+      #   mean: [0.5071, 0.4867, 0.4408]
+      #   std: [0.2675, 0.2565, 0.2761]
+      #   inplace: true
+
+test_dataset:
+  _target_: torchvision.datasets.CIFAR100
+  root: ./data
+  train: false
+  download: true
+  transform: 
+    _target_: torchvision.transforms.Compose
+    transforms:
+      - _target_: torchvision.transforms.ToTensor
+
+      # - _target_: torchvision.transforms.Normalize
+      #   mean: [0.5071, 0.4867, 0.4408]
+      #   std: [0.2675, 0.2565, 0.2761]
+      #   inplace: true
+  

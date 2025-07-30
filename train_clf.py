@@ -27,6 +27,11 @@ def main(conf: DictConfig):
     callbacks = []
     callbacks.append(NeuronTQDMProgressBar())
     tb_logger = NeuronTensorBoardLogger(save_dir=conf.trainer.log_dir)
+    strategy = NeuronXLAStrategy(
+        tensor_parallel_size = 8,
+    )
+    plugins = []
+    plugins.append(NeuronXLAPrecisionPlugin())
     trainer = pl.Trainer(
             accelerator = 'gpu',
             devices = [conf.trainer.gpu],
@@ -38,13 +43,7 @@ def main(conf: DictConfig):
             val_check_interval = conf.trainer.val_check_interval,
             deterministic = conf.trainer.deterministic,
             num_sanity_val_steps = 1, # Change when testing code modifications
-            callbacks = [pl.callbacks.LearningRateMonitor(logging_interval='step'),
-                        pl.callbacks.ModelCheckpoint(filename = 'saved_{epoch}',
-                                                                    save_top_k = 1,
-                                                                    monitor = conf.trainer.val_monitor,
-                                                                    mode = conf.trainer.mode,
-                                                                    save_last = False
-                                                                    )])
+            callbacks = callbacks,)
     trainer.fit(model, train_loader, val_loader)
     save_hydra_config(conf, trainer.logger.log_dir)
     trainer.test(ckpt_path="best", dataloaders=test_loader)
